@@ -49,6 +49,8 @@ impl From<sqlx::Error> for ModelError {
     }
 }
 
+/// Runs migrations to bring the database up to date.
+/// This should ideally be run at program startup.
 pub async fn run_migrations() {
     // sqlx::migrate! embeds migrations into the binary
     sqlx::migrate!().run(&*DB_POOL)

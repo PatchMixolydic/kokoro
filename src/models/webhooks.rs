@@ -1,7 +1,11 @@
 use twilight_http::Client as HttpClient;
 
 use super::{ModelError, DB_POOL};
+use crate::BOT_WEBHOOK_NAME;
 
+/// Retrieves the webhook URL associated with a given channel.
+/// Returns `Err(`[`ModelError::NoSuchItem`]`)` if there is no
+/// webhook for this channel.
 pub async fn webhook_for_channel(channel_id: u64) -> Result<String, ModelError> {
     // Cast done here since this is an implementation detail.
     let channel_id = channel_id as i64;
@@ -16,6 +20,9 @@ pub async fn webhook_for_channel(channel_id: u64) -> Result<String, ModelError> 
     Ok(res.webhook_url)
 }
 
+/// Retrieves the webhook URL associated with a given channel.
+/// If there is no webhook for this channel, one is created
+/// and saved in the database.
 pub async fn get_or_create_webhook(
     http: &HttpClient,
     channel_id: u64,
@@ -24,7 +31,7 @@ pub async fn get_or_create_webhook(
 
     if let Err(ModelError::NoSuchItem) = res {
         let webhook = http
-            .create_webhook(channel_id.into(), "Kokoro")
+            .create_webhook(channel_id.into(), &*BOT_WEBHOOK_NAME)
             .await
             .unwrap();
 

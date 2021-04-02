@@ -18,6 +18,12 @@ use twilight_gateway::{
 use twilight_http::Client as HttpClient;
 use twilight_model::gateway::Intents;
 
+/// The name that the bot will give to generated webhooks.
+static BOT_WEBHOOK_NAME: SyncLazy<String> = SyncLazy::new(|| {
+    env::var("BOT_WEBHOOK_NAME")
+        .unwrap_or_else(|_| "Kokoro".to_owned())
+});
+
 static BOT_USER_ID: SyncLazy<u64> = SyncLazy::new(|| {
     env::var("BOT_USER_ID")
         .expect("The BOT_USER_ID environment variable must be set (preferably in .env).")
@@ -43,10 +49,9 @@ async fn handle_event(shard_id: u64, event: Event, http: HttpClient) -> anyhow::
         },
 
         Event::ShardConnected(_) => {
-            println!("Connected on shard {}\x07", shard_id);
+            println!("Connected on shard {}.", shard_id);
         },
 
-        // Other events here...
         _ => {},
     }
 
@@ -57,34 +62,25 @@ async fn handle_event(shard_id: u64, event: Event, http: HttpClient) -> anyhow::
 async fn main() -> anyhow::Result<()> {
     models::run_migrations().await;
 
-    // Use intents to only receive guild message events.
     let cluster = Cluster::builder(&*TOKEN, Intents::GUILD_MESSAGES)
         .shard_scheme(ShardScheme::Auto)
         .build()
         .await?;
 
-    // Start up the cluster.
     let cluster_spawn = cluster.clone();
 
-    // Start all shards in the cluster in the background.
     task::spawn(async move {
         cluster_spawn.up().await;
     });
 
-    // HTTP is separate from the gateway, so create a new client.
     let http = HttpClient::new(&*TOKEN);
-
-    // Since we only care about new messages, make the cache only
-    // cache new messages.
     let cache = InMemoryCache::builder()
         .resource_types(ResourceType::MESSAGE)
         .build();
 
     let mut events = cluster.events();
 
-    // Process each event as they come in.
     while let Some((shard_id, event)) = events.next().await {
-        // Update the cache with the event.
         cache.update(&event);
         task::spawn(handle_event(shard_id, event, http.clone()));
     }

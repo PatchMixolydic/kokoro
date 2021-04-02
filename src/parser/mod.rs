@@ -40,6 +40,8 @@ parser! {
     }
 }
 
+/// Parse a message, checking to see if it contains a prefix that matches
+/// one of the message author's characters.
 pub async fn parse_prefix(http: &HttpClient, message: &MessageCreate) {
     let characters = Character::all_with_user_id(message.author.id.0)
         .await
