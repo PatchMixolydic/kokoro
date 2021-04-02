@@ -929,7 +929,7 @@ dependencies = [
  "async-std",
  "chrono",
  "dotenv",
- "futures",
+ "futures-lite",
  "sqlx",
  "thiserror",
  "twilight-cache-inmemory",

@@ -9,7 +9,7 @@ mod parser;
 use std::{env, lazy::SyncLazy};
 
 use async_std::task;
-use futures::stream::StreamExt;
+use futures_lite::stream::StreamExt;
 use twilight_cache_inmemory::{InMemoryCache, ResourceType};
 use twilight_gateway::{
     cluster::{Cluster, ShardScheme},

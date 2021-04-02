@@ -1,5 +1,7 @@
 [package]
 name = "kokoro"
+description = "A Discord bot that allows control over multiple virtual users"
+license = "MIT"
 version = "0.1.0"
 authors = ["Ruby Lazuli <nipkraps@gmail.com>"]
 edition = "2018"
@@ -9,7 +11,7 @@ async-std = { version = "1.9.0", features = ["attributes", "tokio1"] }
 anyhow = "1.0.40"
 chrono = "0.4.19"
 dotenv = "0.15.0"
-futures = "0.3.13"
+futures-lite = "1.11.3"
 sqlx = { version = "0.5.1", features = [ "sqlite", "macros", "migrate", "runtime-async-std-native-tls"] }
 thiserror = "1.0.24"
 twilight-cache-inmemory = "0.3"
