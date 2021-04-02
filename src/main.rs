@@ -1,3 +1,4 @@
+#![feature(decl_macro)]
 #![feature(iter_intersperse)]
 #![feature(once_cell)]
 #![feature(pattern)]
