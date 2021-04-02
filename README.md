@@ -61,7 +61,7 @@ $ ls target/debug
 build  deps  examples  incremental  kokoro  kokoro.d
 ```
 
-You can now run Kokoro using `cargo run`:
+You can now run Kokoro using `cargo run` (or `cargo run --release`):
 ```
 $ cargo run
     Finished dev [unoptimized + debuginfo] target(s) in 0.09s
@@ -71,3 +71,35 @@ Connected on shard 0.
 
 [rust]: https://www.rust-lang.org/learn/get-started
 [sqlx-cli]: https://github.com/launchbadge/sqlx/tree/master/sqlx-cli#with-rust-toolchain
+
+## Usage
+To create a character, use the `~create [name] [avatar_url] [prefix]` command.
+Note that arguments can be surrounded with quotes to allow spaces.
+
+```
+PatchMixolydic: ~create "Hina Kagiyama" https://example.com/hina.png hi:
+Kokoro: Created Hina Kagiyama successfully.
+```
+
+You can list all your characters and their prefixes using `ls`:
+```
+PatchMixolydic: ~ls
+Kokoro: Hina Kagiyama (prefix hi:)
+        Patchouli (prefix pat:)
+        Junko (prefix jun:)
+```
+
+To post as a character, send a message starting with that character's prefix:
+```
+PatchMixolydic: hi: hi everyone!
+```
+
+Kokoro will take your message (without the prefix) and send it as your
+character via a webhook. Note that leading and trailing whitespace is stripped.
+The bot will then delete your original message.
+```
+Hina Kagiyama: hi everyone!
+```
+
+Currently, there is no way to edit or delete characters. This may be fixed in
+a future update.
