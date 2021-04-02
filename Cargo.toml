@@ -1,0 +1,20 @@
+[package]
+name = "kokoro"
+version = "0.1.0"
+authors = ["Ruby Lazuli <nipkraps@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+async-std = { version = "1.9.0", features = ["attributes", "tokio1"] }
+anyhow = "1.0.40"
+chrono = "0.4.19"
+dotenv = "0.15.0"
+futures = "0.3.13"
+sqlx = { version = "0.5.1", features = [ "sqlite", "macros", "migrate", "runtime-async-std-native-tls"] }
+thiserror = "1.0.24"
+twilight-cache-inmemory = "0.3"
+twilight-command-parser = "0.3"
+twilight-gateway = "0.3"
+twilight-http = "0.3"
+twilight-model = "0.3"
+webhook = { git = "https://github.com/thoo0224/webhook-rs", rev = "43aaef67418effe27fb94e83d7e48d5c42dbed6d" }
