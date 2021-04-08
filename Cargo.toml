@@ -12,7 +12,6 @@ anyhow = "1.0.40"
 chrono = "0.4.19"
 dotenv = "0.15.0"
 futures-lite = "1.11.3"
-new_debug_unreachable = "1.0"
 sqlx = { version = "0.5.1", features = [ "sqlite", "macros", "migrate", "runtime-async-std-native-tls"] }
 thiserror = "1.0.24"
 twilight-cache-inmemory = "0.3"
