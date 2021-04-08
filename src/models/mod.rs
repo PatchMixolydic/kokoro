@@ -16,7 +16,7 @@ pub(self) static DB_POOL: SyncLazy<SqlitePool> = SyncLazy::new(|| {
     block_on(
         SqlitePoolOptions::new()
             .max_connections(10)
-            .connect(&database_url)
+            .connect(&database_url),
     )
     .expect("Failed to create database connection pool")
 });
@@ -53,7 +53,8 @@ impl From<sqlx::Error> for ModelError {
 /// This should ideally be run at program startup.
 pub async fn run_migrations() {
     // sqlx::migrate! embeds migrations into the binary
-    sqlx::migrate!().run(&*DB_POOL)
+    sqlx::migrate!()
+        .run(&*DB_POOL)
         .await
         .unwrap_or_else(|err| panic!("Failed to run migrations: {}", err));
 }

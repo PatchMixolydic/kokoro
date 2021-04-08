@@ -7,7 +7,10 @@ use twilight_http::Client as HttpClient;
 use twilight_model::gateway::payload::MessageCreate;
 use webhook::Webhook;
 
-use crate::{BOT_USER_ID, models::{characters::Character, webhooks::get_or_create_webhook}, parser};
+use crate::{
+    models::{characters::Character, webhooks::get_or_create_webhook},
+    parser, BOT_USER_ID,
+};
 
 parser! {
     with (message, arguments) {

@@ -11,16 +11,16 @@ pub struct Character {
 }
 
 impl Character {
-    /// Returns information about the character with the given id in the database
-    /// or an error if something went wrong.
+    /// Returns information about the character with the given id in the
+    /// database or an error if something went wrong.
     pub async fn with_id(char_id: u32) -> Result<Self, ModelError> {
         let res = sqlx::query_as!(
-                Character,
-                "select * from characters where char_id = $1 limit 1",
-                char_id
-            )
-            .fetch_one(&*DB_POOL)
-            .await?;
+            Character,
+            "select * from characters where char_id = $1 limit 1",
+            char_id
+        )
+        .fetch_one(&*DB_POOL)
+        .await?;
 
         Ok(res)
     }
@@ -33,13 +33,13 @@ impl Character {
         let user_id = user_id as i64;
 
         let res = sqlx::query_as!(
-                Character,
-                "select * from characters where (char_name = $1) and (user_id = $2) limit 1",
-                name,
-                user_id
-            )
-            .fetch_one(&*DB_POOL)
-            .await?;
+            Character,
+            "select * from characters where (char_name = $1) and (user_id = $2) limit 1",
+            name,
+            user_id
+        )
+        .fetch_one(&*DB_POOL)
+        .await?;
 
         Ok(res)
     }
@@ -62,7 +62,12 @@ impl Character {
     }
 
     /// Create a new character.
-    pub async fn insert(user_id: u64, name: &str, avatar: &str, prefix: &str) -> Result<(), ModelError> {
+    pub async fn insert(
+        user_id: u64,
+        name: &str,
+        avatar: &str,
+        prefix: &str,
+    ) -> Result<(), ModelError> {
         // Cast done here since this is an implementation detail.
         // sqlite does not accept `u64`s.
         let user_id = user_id as i64;

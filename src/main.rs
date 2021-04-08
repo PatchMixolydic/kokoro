@@ -19,10 +19,8 @@ use twilight_http::Client as HttpClient;
 use twilight_model::gateway::Intents;
 
 /// The name that the bot will give to generated webhooks.
-static BOT_WEBHOOK_NAME: SyncLazy<String> = SyncLazy::new(|| {
-    env::var("BOT_WEBHOOK_NAME")
-        .unwrap_or_else(|_| "Kokoro".to_owned())
-});
+static BOT_WEBHOOK_NAME: SyncLazy<String> =
+    SyncLazy::new(|| env::var("BOT_WEBHOOK_NAME").unwrap_or_else(|_| "Kokoro".to_owned()));
 
 static BOT_USER_ID: SyncLazy<u64> = SyncLazy::new(|| {
     env::var("BOT_USER_ID")
