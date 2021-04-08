@@ -10,6 +10,8 @@ use crate::{
     BOT_USER_ID,
 };
 
+// When adding a new command, please keep this in sync
+// with `PARSER` and `parse_command`.
 const HELP: &str = r#"Available commands:
     `~help` – Displays this help message.
     `~echo message` –  Echo a message.
@@ -20,6 +22,8 @@ Arguments can be surrounded by quotes to allow for spaces.
 For example, `~create "Hata no Kokoro" https://example.com/kokoro.png koko:` will create a character named Hata no Kokoro.
 "#;
 
+// When adding a new command, please keep this in sync
+// with `HELP` and `parse_command`.
 static PARSER: SyncLazy<Parser<'static>> = SyncLazy::new(|| {
     let mut config = CommandParserConfig::new();
     config.add_prefix("~");
@@ -45,6 +49,8 @@ pub async fn parse_command(message: &MessageCreate) -> Option<String> {
         Some(Command {
             name, arguments, ..
         }) => {
+            // When adding a new command, please keep this in sync
+            // with `HELP` and `PARSER`.
             let res = match name {
                 "help" => HELP.to_owned(),
 
@@ -111,6 +117,10 @@ pub async fn parse_command(message: &MessageCreate) -> Option<String> {
                     format!("Created {} successfully.", name)
                 },
 
+                // `PARSER` will only return `Some` for commands
+                // that have been explicitly added. Please keep
+                // this match expression in sync with `HELP` and
+                // `PARSER`.
                 _ => unreachable!(),
             };
 
