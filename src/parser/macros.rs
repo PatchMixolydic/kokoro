@@ -11,7 +11,7 @@ macro_rules! count_idents {
 macro_rules! parser {
     (
         with ($message:ident, $arguments:ident) {
-            $($command:ident ($($arg_name:ident),*) => $exp:expr $(,)?)*
+            $($command:ident ($($arg_name:ident),*) $blk:block $(,)?)*
         }
     ) => {
         static PARSER: SyncLazy<Parser<'static>> = SyncLazy::new(|| {
@@ -62,13 +62,13 @@ macro_rules! parser {
                                 stringify!($command),
                                 NUM_ARGS,
                                 // TODO: hacky
-                                if NUM_ARGS == 0 { "" } else { ": " },
-                                concat!($("`", stringify!($arg_name), "`"),*),
+                                if NUM_ARGS == 0 { "" } else { ":" },
+                                concat!($(" `", stringify!($arg_name), "`"),*),
                             ))
                         }
 
                         if let [$($arg_name),*] = arguments_vec.as_slice() {
-                            $exp
+                            $blk
                         } else {
                             // SAFETY: there should be `NUM_ARGS` `arg_name`s and
                             // `NUM_ARGS` should be equal to `arguments_vec.len()`,

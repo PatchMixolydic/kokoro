@@ -14,15 +14,17 @@ use crate::{
 
 parser! {
     with (message, arguments) {
-        echo() => arguments.as_str().to_owned(),
+        echo() {
+            arguments.as_str().to_owned()
+        }
 
-        ping() => {
+        ping() {
             let message_timestamp = DateTime::parse_from_rfc3339(&message.timestamp).unwrap();
             let time = Utc::now().signed_duration_since(message_timestamp).num_milliseconds();
             format!("Pong. Command recieved in **{}** ms.", time)
         }
 
-        ls() => {
+        ls() {
             let characters = Character::all_with_user_id(message.author.id.0).await.unwrap();
 
             if characters.is_empty() {
@@ -36,7 +38,7 @@ parser! {
             }
         }
 
-        create(name, avatar, prefix) => {
+        create(name, avatar, prefix) {
             Character::insert(message.author.id.0, name, avatar, prefix).await.unwrap();
             format!("Created {} successfully.", name)
         }
