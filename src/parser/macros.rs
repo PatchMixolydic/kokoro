@@ -56,9 +56,7 @@ macro_rules! parser {
 
                         if arguments_vec.len() != NUM_ARGS {
                             return Some(format!(
-                                "\
-                                ~{} takes {} arguments: {}.
-                                ",
+                                "~{} takes {} arguments: {}.",
                                 stringify!($command),
                                 NUM_ARGS,
                                 concat!($("`", stringify!($arg_name), "`"),*),
