@@ -14,8 +14,8 @@ use crate::{
 
 parser! {
     with (message, arguments) {
-        echo() {
-            arguments.as_str().to_owned()
+        echo(..message) {
+            message
         }
 
         ping() {

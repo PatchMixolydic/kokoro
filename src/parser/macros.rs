@@ -11,7 +11,10 @@ macro_rules! count_idents {
 macro_rules! parser {
     (
         with ($message:ident, $arguments:ident) {
-            $($command:ident ($($arg_name:ident),*) $blk:block $(,)?)*
+            // Technically, the `$rest` part is incorrect since it allows
+            // `command(, ..rest)` and `command(a, b ..rest)`.
+            // I can probably live with that.
+            $($command:ident ($($arg_name:ident),* $($(,)? ..$rest:ident)? $(,)?) $blk:block $(,)?)*
         }
     ) => {
         static PARSER: SyncLazy<Parser<'static>> = SyncLazy::new(|| {
@@ -43,29 +46,65 @@ macro_rules! parser {
                                 "    ~",
                                 stringify!($command),
                                 $(" ", stringify!($arg_name),)*
+                                $(" ", stringify!($rest), "...",)?
                                 "\n",
                             )*
                             "\n",
-                            "Arguments can be surrounded by quotes to allow for spaces.\n",
+                            "`argument...` denotes a \"rest\" argument that consumes all arguments from then ",
+                            "on, including spaces.\n",
+                            "Non-rest arguments can be surrounded by quotes to allow for spaces.\n",
                             "For example, `~create \"Hata no Kokoro\" https://example.com/kokoro.png koko:` ",
-                            "will create a character named \"Hata no Kokoro\"",
+                            "will create a character named \"Hata no Kokoro\".\n",
+                            "Note that as a side effect of this, any quotes in a rest argument will be removed.",
                         ).to_owned()
                     },
 
                     $(stringify!($command) => {
+                        // Constants are used to try and prod the compiler to
+                        // optimize this code
+                        /// Number of non-$rest arguments
                         const NUM_ARGS: usize = $crate::count_idents!($($arg_name)*);
-                        let arguments_vec = $arguments.clone().collect::<Vec<_>>();
+                        /// 1 if ..$rest is given, 0 otherwise
+                        const REST: usize = $crate::count_idents!($($rest)?);
+                        const HAS_REST: bool = REST != 0;
 
-                        if arguments_vec.len() != NUM_ARGS {
-                            return Some(format!(
-                                "~{} takes {} arguments{}{}.",
-                                stringify!($command),
-                                NUM_ARGS,
-                                // TODO: hacky
-                                if NUM_ARGS == 0 { "" } else { ":" },
-                                concat!($(" `", stringify!($arg_name), "`"),*),
-                            ))
+                        static USAGE: SyncLazy<String> = SyncLazy::new(|| format!(
+                            "~{} takes {} argument{}{}{}.",
+                            stringify!($command),
+                            NUM_ARGS + REST,
+                            // TODO: hacky?
+                            if NUM_ARGS + REST == 1 { "" } else { "s" },
+                            if NUM_ARGS + REST == 0 { "" } else { ":" },
+                            concat!($(" `", stringify!($arg_name), "`",)* $(" `", stringify!($rest), "...`")?),
+                        ));
+
+                        let mut arguments_vec = $arguments
+                            .clone()
+                            .collect::<Vec<_>>();
+
+                        if
+                            // If we don't have a `..$rest` argument,
+                            // we just need `NUM_ARGS` arguments.
+                            (!HAS_REST && arguments_vec.len() != NUM_ARGS)
+                            // Otherwise, we need at least `NUM_ARGS + 1` (but
+                            // we can take more!).
+                            || (HAS_REST && arguments_vec.len() < NUM_ARGS + 1)
+                        {
+                            return Some(USAGE.clone());
                         }
+
+                        $(
+                            let $rest = $arguments
+                                .clone()
+                                .skip(NUM_ARGS)
+                                .intersperse(" ")
+                                .collect::<String>();
+                        )?
+
+                        // This is done here rather than
+                        // before collecting into the `Vec`
+                        // to check for excess arguments.
+                        arguments_vec.truncate(NUM_ARGS);
 
                         if let [$($arg_name),*] = arguments_vec.as_slice() {
                             $blk
