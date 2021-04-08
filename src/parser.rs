@@ -10,7 +10,7 @@ use crate::{
     BOT_USER_ID,
 };
 
-const HELP: &'static str = r#"Available commands:
+const HELP: &str = r#"Available commands:
     `~help` – Displays this help message.
     `~echo message` –  Echo a message.
     `~ping` – Check the bot's response time.
